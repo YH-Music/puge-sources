@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "updated": "2026-10-12",
+ "sources": [
+  {
+   "id": "puge-huibq",
+   "name": "聚合API-Huibq",
+   "file": "huibq.js"
+  },
+  {
+   "id": "puge-juhe",
+   "name": "聚合API-CF",
+   "file": "juhe.js"
+  },
+  {
+   "id": "puge-ikun",
+   "name": "ikun源",
+   "file": "ikun.js"
+  },
+  {
+   "id": "puge-sixyin",
+   "name": "六音源",
+   "file": "sixyin.js"
+  },
+  {
+   "id": "puge-flower",
+   "name": "野花源",
+   "file": "flower.js"
+  },
+  {
+   "id": "puge-grass",
+   "name": "野草源",
+   "file": "grass.js"
+  },
+  {
+   "id": "puge-lx",
+   "name": "独家源",
+   "file": "lx.js"
+  }
+ ]
+}
