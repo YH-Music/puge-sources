@@ -1,0 +1,59 @@
+name: sync-upstream-sources
+
+on:
+  schedule:
+    - cron: '0 1 * * *'   # 每天 UTC 01:00（北京时间 09:00）
+  workflow_dispatch:       # 允许手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch latest source scripts from upstream
+        run: |
+          set -e
+          declare -A MAP=(
+            [huibq.js]="huibq/latest.js"
+            [juhe.js]="juhe/latest.js"
+            [ikun.js]="ikun/latest.js"
+            [sixyin.js]="sixyin/latest.js"
+            [flower.js]="flower/latest.js"
+            [grass.js]="grass/latest.js"
+            [lx.js]="lx/latest.js"
+          )
+          for f in "${!MAP[@]}"; do
+            url="https://raw.githubusercontent.com/pdone/lx-music-source/main/${MAP[$f]}"
+            if curl -sfL "$url" -o "$f.new"; then
+              if [ -s "$f.new" ] && grep -q "EVENT_NAMES" "$f.new"; then
+                mv "$f.new" "$f"
+              else
+                echo "skip $f: invalid content"
+                rm -f "$f.new"
+              fi
+            else
+              echo "skip $f: fetch failed"
+            fi
+          done
+          # 更新 index.json 的 updated 字段
+          TODAY=$(date +%F)
+          python3 -c "
+          import json
+          d = json.load(open('index.json'))
+          d['updated'] = '$TODAY'
+          json.dump(d, open('index.json','w'), ensure_ascii=False, indent=1)
+          "
+      - name: Commit if changed
+        run: |
+          git config user.name "source-sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "auto-sync upstream sources $(date +%F)"
+            git push
+          else
+            echo "no changes"
+          fi
