@@ -28,7 +28,7 @@ jobs:
           for f in "${!MAP[@]}"; do
             url="https://raw.githubusercontent.com/pdone/lx-music-source/main/${MAP[$f]}"
             if curl -sfL "$url" -o "$f.new"; then
-              if [ -s "$f.new" ] && grep -q "EVENT_NAMES" "$f.new"; then
+              if [ -s "$f.new" ] && grep -qiE "EVENT_NAMES|globalThis" "$f.new"; then
                 mv "$f.new" "$f"
               else
                 echo "skip $f: invalid content"
